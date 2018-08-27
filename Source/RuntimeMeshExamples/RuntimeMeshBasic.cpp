@@ -15,7 +15,8 @@ ARuntimeMeshBasic::ARuntimeMeshBasic()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bRunGenerateMeshesOnConstruction = false;
+	bRunGenerateMeshesOnBeginPlay = true;
 }
 
 
@@ -24,43 +25,18 @@ void ARuntimeMeshBasic::GenerateMeshes_Implementation()
 {
 /*	TSharedPtr<FRuntimeMeshBuilder> Builder = MakeRuntimeMeshBuilder<FRuntimeMeshTangentsHighPrecision, FRuntimeMeshDualUV, uint16>();*/
 
-FRuntimeMeshDataPtr Data = GetRuntimeMeshComponent()->GetOrCreateRuntimeMesh()->GetRuntimeMeshData();
-Data->EnterSerializedMode();
+	URuntimeMesh* RuntimeMesh = GetRuntimeMeshComponent()->GetOrCreateRuntimeMesh();
+	RuntimeMesh->SetCollisionUseAsyncCooking(true);
 
-Data->CreateMeshSection(0, false, false, 1, false, true, EUpdateFrequency::Average);
+	FRuntimeMeshDataPtr Data = RuntimeMesh->GetRuntimeMeshData();
+	Data->EnterSerializedMode();
 
-auto Section = Data->BeginSectionUpdate(0);
+	Data->CreateMeshSection(0, false, false, 1, false, true, EUpdateFrequency::Average);
 
-URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize, *Section.Get());
+	auto Section = Data->BeginSectionUpdate(0);
 
-Section->Commit();
-//
-//
-//TArray<FRuntimeMeshVertexSimple> Vertices;
-//TArray<int32> Triangles;
-//URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize, Vertices, Triangles);
-//
-//Data->CreateMeshSection(0, Vertices, Triangles, true);
-//
-//
-//Data->UpdateMeshSection(0, Vertices, Triangles);
+	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize, *Section.Get());
 
-// 	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize, Builder);
-// 
-// 	FVector4 TestNormal = Builder->GetNormal(0);
-// 	FVector TestTangent = Builder->GetTangent(0);
-// 
-// 	GetRuntimeMeshComponent()->CreateMeshSection(0, Builder, true, EUpdateFrequency::Infrequent);
-
-
-// 	TSharedPtr<FRuntimeMeshBuilder> Builder2 = MakeRuntimeMeshBuilder<FVector, FRuntimeMeshVertexNoPosition, uint16>();
-// 	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize * 0.75, Builder2);
-// 
-// 
-// 	GetRuntimeMeshComponent()->GetOrCreateRuntimeMesh()->GetRuntimeMeshData()->CreateMeshSectionDualBuffer<FVector, FRuntimeMeshVertexNoPosition, uint16>(0, false, EUpdateFrequency::Infrequent, 2);
-// 	GetRuntimeMeshComponent()->GetRuntimeMesh()->GetRuntimeMeshData()->UpdateMeshSectionLOD(0, 0, Builder);
-// 	GetRuntimeMeshComponent()->GetRuntimeMesh()->GetRuntimeMeshData()->UpdateMeshSectionLOD(0, 1, Builder2);
-
-//GetRuntimeMeshComponent()->GetRuntimeMesh()->GetRuntimeMeshData()->CreateMeshSection(0, Builder, true, EUpdateFrequency::Infrequent, ESectionUpdateFlags::CalculateNormalTangentHard
+	Section->Commit();
 }
 
