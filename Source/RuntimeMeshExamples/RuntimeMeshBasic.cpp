@@ -31,12 +31,27 @@ void ARuntimeMeshBasic::GenerateMeshes_Implementation()
 	FRuntimeMeshDataPtr Data = RuntimeMesh->GetRuntimeMeshData();
 	Data->EnterSerializedMode();
 
-	Data->CreateMeshSection(0, false, false, 1, false, true, EUpdateFrequency::Average);
+	Data->CreateMeshSection(0, false, false, 1, false, true, EUpdateFrequency::Infrequent);
 
-	auto Section = Data->BeginSectionUpdate(0);
-
-	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize, *Section.Get());
-
+	auto Section = Data->BeginSectionUpdate(0, 0);
+	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize * 0.75f, *Section.Get());
 	Section->Commit();
+
+	Section = Data->BeginSectionUpdate(0, 1);
+	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize * 0.6f, *Section.Get());
+	Section->Commit();
+
+	Section = Data->BeginSectionUpdate(0, 2);
+	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize * 0.4f, *Section.Get());
+	Section->Commit();
+
+	Section = Data->BeginSectionUpdate(0, 3);
+	URuntimeMeshShapeGenerator::CreateBoxMesh(BoxSize * 0.2f, *Section.Get());
+	Section->Commit();
+
+	Data->SetLODScreenSize(0, 1.0f);
+	Data->SetLODScreenSize(1, 0.75f);
+	Data->SetLODScreenSize(2, 0.25f);
+	Data->SetLODScreenSize(3, 0.15f);
 }
 
