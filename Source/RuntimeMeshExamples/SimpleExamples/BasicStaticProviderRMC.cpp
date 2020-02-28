@@ -68,6 +68,7 @@ void ABasicStaticProviderRMC::GenerateMeshes_Implementation()
 	auto AddVertex = [&](const FVector& InPosition, const FVector& InTangentX, const FVector& InTangentZ, const FVector2D& InTexCoord)
 	{
 		MeshData.Positions.Add(InPosition);
+		// This is commented out becuase the Tangets should get automatically calculated below
 		//MeshData.Tangents.Add(InTangentZ, InTangentX);
 		MeshData.Colors.Add(FColor::White);
 		MeshData.TexCoords.Add(InTexCoord);
