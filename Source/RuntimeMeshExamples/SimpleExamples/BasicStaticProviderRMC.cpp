@@ -3,6 +3,7 @@
 
 #include "BasicStaticProviderRMC.h"
 #include "Providers/RuntimeMeshProviderStatic.h"
+#include "Providers/RuntimeMeshProviderNormals.h"
 #include "Materials/Material.h"
 
 // Sets default values
@@ -67,7 +68,7 @@ void ABasicStaticProviderRMC::GenerateMeshes_Implementation()
 	auto AddVertex = [&](const FVector& InPosition, const FVector& InTangentX, const FVector& InTangentZ, const FVector2D& InTexCoord)
 	{
 		MeshData.Positions.Add(InPosition);
-		MeshData.Tangents.Add(InTangentZ, InTangentX);
+		//MeshData.Tangents.Add(InTangentZ, InTangentX);
 		MeshData.Colors.Add(FColor::White);
 		MeshData.TexCoords.Add(InTexCoord);
 	};
@@ -134,7 +135,12 @@ void ABasicStaticProviderRMC::GenerateMeshes_Implementation()
 	MeshData.Triangles.AddTriangle(20, 21, 23);
 	MeshData.Triangles.AddTriangle(21, 22, 23);
 
-
+	// Trying to automatically calcualte Tangents <---
+	URuntimeMeshProviderNormals* Nrms = NewObject<URuntimeMeshProviderNormals>(this);
+	Nrms->SourceProvider = (URuntimeMeshProvider*)StaticProvider;
+	Nrms->ComputeTangents = true;
+	GetRuntimeMeshComponent()->Initialize(Nrms);
+	//
 
 	// Add the mesh
 	StaticProvider->UpdateSection(0, 0, MeshData);
